@@ -1,0 +1,47 @@
+name: Sync MCP Registry
+
+# Keeps registry.json in sync with the Official MCP Registry.
+on:
+  schedule:
+    # Every 12 hours (00:00 and 12:00 UTC).
+    - cron: "0 */12 * * *"
+  workflow_dispatch: {} # Allow manual runs from the Actions tab.
+
+# Allow the workflow to push the updated registry.json back to the repo.
+permissions:
+  contents: write
+
+# Never run two syncs at once; let the in-progress one finish.
+concurrency:
+  group: sync-registry
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # No dependencies to install — sync.js uses only the Node.js standard library.
+      - name: Run sync
+        run: node sync.js
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ -z "$(git status --porcelain registry.json)" ]; then
+            echo "No changes to registry.json — nothing to commit."
+            exit 0
+          fi
+
+          git add registry.json
+          git commit -m "chore: sync registry.json ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+          git push

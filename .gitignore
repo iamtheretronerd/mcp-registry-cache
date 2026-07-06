@@ -1,0 +1,9 @@
+# Dependencies (none are required, but keep this out just in case)
+node_modules/
+
+# Local-only, human-readable mirror of registry.json produced by sync.js
+registry.pretty.json
+
+# Logs / OS cruft
+*.log
+.DS_Store

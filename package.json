@@ -1,0 +1,14 @@
+{
+  "name": "mcp-registry-cache",
+  "version": "1.0.0",
+  "description": "Zero-maintenance mirror of the Official MCP Registry, synced via GitHub Actions and served as a static registry.json.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "sync": "node sync.js"
+  },
+  "license": "MIT"
+}
